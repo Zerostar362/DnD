@@ -31,6 +31,13 @@ namespace DnD.Models.MapRelated
 
 
         private int[,] Map { get; set; }
+        int IPlayableArea.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IPlayableArea.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        bool IPlayableArea.hasEnemies { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        bool IPlayableArea.hasMultipleDoors { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        bool IPlayableArea.isLighted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        List<IEnemy>? IPlayableArea.ListOfEnemies { set => throw new NotImplementedException(); }
+        List<IDoor>? IPlayableArea.ListOfDoors { set => throw new NotImplementedException(); }
 
         public Room(int width, int height, string roomLore, bool hasenemies, bool hasMultipledoors,
             bool hasInvestigationspace, ICollection<IEnemy> enemies, ICollection<IDoor> doors, ICollection<IInvestigationSpace> spaces)

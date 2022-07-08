@@ -1,5 +1,4 @@
-﻿using DnD.View;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,22 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DnD
+namespace DnD.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MapCreator.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MapCreator : Window
     {
-        public MainWindow()
+        public MapCreator()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var page = new MapCreator();
-            page.Show();
         }
     }
 }

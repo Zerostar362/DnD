@@ -8,9 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Generic\" />
-    <Folder Include="Models\PlayerRelated\" />
-    <Folder Include="Pages\" />
+    <Compile Remove="Generic\**" />
+    <Compile Remove="Pages\**" />
+    <EmbeddedResource Remove="Generic\**" />
+    <EmbeddedResource Remove="Pages\**" />
+    <None Remove="Generic\**" />
+    <None Remove="Pages\**" />
+    <Page Remove="Generic\**" />
+    <Page Remove="Pages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\PlayerRelated\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

@@ -4,9 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DnD"
+        xmlns:c="clr-namespace:DnD.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Content="Start New Game"
+            Margin="50,20,50,100"
+            />
+            <Button
+            Grid.Row="1"
+            Grid.Column="2"
+            Content="Load SavedGame"
+            Margin="50,50,50,70"
+            />
+            <Button Grid.Row="1" Grid.Column="1" Margin="50,80,50,40" Click="Button_Click">
+            </Button>
+        <Frame x:Name="_NavigationFrame" 
+               NavigationUIVisibility="Hidden"
+               Grid.ColumnSpan="5"
+               Grid.RowSpan="5"
+               >
+    </Frame>
     </Grid>
 </Window>

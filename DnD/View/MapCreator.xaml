@@ -1,0 +1,49 @@
+﻿<Window x:Class="DnD.View.MapCreator"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DnD.View"
+        xmlns:c="clr-namespace:DnD.ViewModel"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="MapCreator">
+    <Window.Resources>
+        <c:MapCreatorVM x:Key="MapCreatorVM">
+            
+        </c:MapCreatorVM>
+    </Window.Resources>
+
+    <Grid Background="White" DataContext="{Binding Source={StaticResource MapCreatorVM}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" MinWidth="50" MaxWidth="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" MinHeight="50" MaxHeight="150"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Column="1" Grid.Row="0">
+
+        </DockPanel>
+        <StackPanel Grid.Row="1"></StackPanel>
+        <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}" Grid.Column="1" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Name}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>
