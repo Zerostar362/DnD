@@ -14,9 +14,14 @@ namespace DnD.Model.System.ExtensionMethods
             return JsonConvert.SerializeObject(obj);
         }
 
-        public static string ToJson(this string str)
+        public static TValue ConvertJson<TValue>(this string str)
         {
-            return JsonConvert.
+            return JsonConvert.DeserializeObject<TValue>(str);
+        }
+
+        public static object ConvertJson(this string str)
+        {
+            return JsonConvert.DeserializeObject(str);
         }
     }
 }

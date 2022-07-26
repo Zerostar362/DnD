@@ -6,8 +6,13 @@
       xmlns:local="clr-namespace:DnD.View"
         xmlns:c="clr-namespace:DnD.ViewModel"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" 
+        d:DesignWidth="800"
+        Width="1600"
+        Height="860"
       Title="MapCreator">
+    
+    
     <Window.Resources>
         <c:MapCreatorVM x:Key="MapCreatorVM">
             
@@ -41,7 +46,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=Name}" />
+                    <ContentControl Content="{Binding Path=shape}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
