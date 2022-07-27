@@ -11,8 +11,8 @@
         Width="1600"
         Height="860"
       Title="MapCreator">
-    
-    
+
+
     <Window.Resources>
         <c:MapCreatorVM x:Key="MapCreatorVM">
             
@@ -31,11 +31,14 @@
         <DockPanel Grid.Column="1" Grid.Row="0">
 
         </DockPanel>
-        <StackPanel Grid.Row="1"></StackPanel>
+        <StackPanel Grid.Row="1">
+            <Button Command=""/>
+        </StackPanel>
         <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}" Grid.Column="1" Grid.Row="1">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas/>
+                    <Canvas x:Name="MapCanvas">
+                    </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using DnD.ViewModel.System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -19,9 +21,27 @@ namespace DnD.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
 
+
+        #region commands constructor
+
+        ICommand SelectTile { get; }
+
+        #region methods
+        public void CreateCommands()
+        {
+            
+        }
+
+        private ICommand Cmd(Action<object?> execute, Func<object?, bool>? canExecute = null) => new Command(execute, canExecute);
+        #endregion
+
+        #endregion
+
         public MapCreatorVM()
         {
+            CreateCommands();
             CreateGrid();
+            SelectTile = Cmd(p => RemapRectangle(MousePosX, MousePosY));
         }
 
         public ObservableCollection<CanvasItem> _itemsToCanvas = new ObservableCollection<CanvasItem>();
@@ -39,19 +59,15 @@ namespace DnD.ViewModel
             private set { _prefabricatedRooms = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PrefabricatedRoom")); }
         }
 
-        private int _WindowHeight;
-        public int WindowHeight
-        {
-            get;
-            set;
-        } = 860;
+        public int MousePosX { get; set; }
 
-        private int _WindowWidth;
-        public int WindowWidth
-        {
-            get;
-            set;
-        } = 1600;
+        public int MousePosY { get; set; }
+
+
+        public int WindowHeight { get; set; } = 810;
+
+        
+        public int WindowWidth { get; set; } = 1450;
 
 
 
@@ -78,6 +94,12 @@ namespace DnD.ViewModel
             WindowWidth = 50;
             WindowHeight = 500;
         }
+
+        public void RemapRectangle(int top, int left)
+        {
+
+        }
+
 
     }
 

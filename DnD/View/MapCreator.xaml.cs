@@ -19,11 +19,21 @@ namespace DnD.View
     /// <summary>
     /// Interaction logic for MapCreator.xaml
     /// </summary>
+    /// 
     public partial class MapCreator : Window
     {
+        private double MousePosX { get; set; }
+        private double MousePosY { get; set; }
         public MapCreator()
         {
             InitializeComponent();
+        }
+
+        public void MousePosChangedEvent(object sender, MouseEventArgs e)
+        {
+            var point = e.GetPosition(e.Device.Target);
+            MousePosX = point.X;
+            MousePosY = point.Y;
         }
     }
 }
