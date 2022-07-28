@@ -20,20 +20,32 @@ namespace DnD.View
     /// Interaction logic for MapCreator.xaml
     /// </summary>
     /// 
-    public partial class MapCreator : Window
+    public partial class MapCreator : Window, INotifyPropertyChanged
     {
-        private double MousePosX { get; set; }
-        private double MousePosY { get; set; }
+        private double _MousePosX;
+        public double MousePosX 
+        { 
+            get { return _MousePosX; }
+            set { _MousePosX = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MousePosX")); }
+        }
+        private double _MousePosY;
+        public double MousePosY 
+        { 
+            get { return _MousePosY; }
+            set { _MousePosY = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MousePosY")); }
+        }
         public MapCreator()
         {
             InitializeComponent();
         }
 
-        public void MousePosChangedEvent(object sender, MouseEventArgs e)
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void ContentControl_MouseMove(object sender, MouseEventArgs e)
         {
-            var point = e.GetPosition(e.Device.Target);
-            MousePosX = point.X;
-            MousePosY = point.Y;
+            var pos = e.GetPosition(e.Device.Target);
+            MousePosX = pos.X;
+            MousePosY = pos.Y;
         }
     }
 }
