@@ -22,30 +22,35 @@ namespace DnD.View
     /// 
     public partial class MapCreator : Window, INotifyPropertyChanged
     {
-        private double _MousePosX;
-        public double MousePosX 
+        private string _MousePosX = "0";
+        public string MousePositionX
         { 
             get { return _MousePosX; }
             set { _MousePosX = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MousePosX")); }
         }
-        private double _MousePosY;
-        public double MousePosY 
+        private string _MousePosY = "0";
+        public string MousePositionY 
         { 
             get { return _MousePosY; }
             set { _MousePosY = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MousePosY")); }
         }
+
+
         public MapCreator()
         {
             InitializeComponent();
+            DataContext = this;
+            Application.Current.MainWindow = this;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void ContentControl_MouseMove(object sender, MouseEventArgs e)
         {
-            var pos = e.GetPosition(e.Device.Target);
-            MousePosX = pos.X;
-            MousePosY = pos.Y;
+            
+            var pos = e.GetPosition(Application.Current.MainWindow);
+            this.MPX.Text = Math.Floor((((pos.X - 150) / 20) + 1)).ToString();
+            this.MPY.Text = Math.Floor((((pos.Y - 50) / 20) + 1)).ToString();
         }
     }
 }

@@ -17,6 +17,9 @@
         <c:MapCreatorVM x:Key="MapCreatorVM">
             
         </c:MapCreatorVM>
+        <local:MapCreator x:Key="MC">
+            
+        </local:MapCreator>
     </Window.Resources>
 
     <Grid Background="White" DataContext="{Binding Source={StaticResource MapCreatorVM}}">
@@ -31,10 +34,10 @@
         <DockPanel Grid.Column="1" Grid.Row="0">
 
         </DockPanel>
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="1" DataContext="">
             <Button Command=""/>
-            <TextBox Text="{Binding Path=MousePosX}"/>
-            <TextBox Text="{Binding Path=MousePosY}"/>
+            <TextBlock x:Name="MPX"/>
+            <TextBlock x:Name="MPY"/>
         </StackPanel>
         <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}" Grid.Column="1" Grid.Row="1">
             <ItemsControl.ItemsPanel>

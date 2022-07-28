@@ -59,7 +59,7 @@ namespace DnD.ViewModel
             private set { _prefabricatedRooms = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PrefabricatedRoom")); }
         }
 
-        public int MousePosX { get; set; }
+        public int MousePosX { get; set; } = 5;
 
         public int MousePosY { get; set; }
 
