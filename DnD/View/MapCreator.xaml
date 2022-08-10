@@ -5,21 +5,20 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DnD.View"
         xmlns:c="clr-namespace:DnD.ViewModel"
-      mc:Ignorable="d" 
+        mc:Ignorable="d" 
       d:DesignHeight="450" 
         d:DesignWidth="800"
         Width="1600"
         Height="860"
-      Title="MapCreator">
+        ResizeMode="NoResize"
+      Title="MapCreator"
+        >
 
 
     <Window.Resources>
         <c:MapCreatorVM x:Key="MapCreatorVM">
-            
+
         </c:MapCreatorVM>
-        <local:MapCreator x:Key="MC">
-            
-        </local:MapCreator>
     </Window.Resources>
 
     <Grid Background="White" DataContext="{Binding Source={StaticResource MapCreatorVM}}">
@@ -31,32 +30,47 @@
             <RowDefinition Height="50" MinHeight="50" MaxHeight="150"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <DockPanel Grid.Column="1" Grid.Row="0">
-
-        </DockPanel>
-        <StackPanel Grid.Row="1" DataContext="">
-            <Button Command=""/>
-            <TextBlock x:Name="MPX"/>
-            <TextBlock x:Name="MPY"/>
+        <StackPanel Grid.Row="0" Grid.Column="0">
         </StackPanel>
+        <DockPanel Grid.Column="1" Grid.Row="0">
+            <GroupBox Header="DrawModes">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Corridor"/>
+                    <Button Content="Room"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Enemies">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Troll"/>
+                    <Button Content="Gnome"/>
+                </StackPanel>
+            </GroupBox>
+        </DockPanel>
+        <StackPanel Grid.Row="1">
+            <Button Command="{Binding ForceUpdate}" Content="ForceUpdate"/>
+            <TextBlock Text="{Binding MousePosX}"/>
+            <TextBlock Text="{Binding MousePosY}"/>
+            <TextBlock Text="{Binding MapZoom}"/>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1">
         <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}" Grid.Column="1" Grid.Row="1">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas x:Name="MapCanvas">
-                    </Canvas>
+                    <Canvas/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding Left}"/>
-                    <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+                    <Setter Property="Canvas.Left" Value="{Binding Left, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Top, UpdateSourceTrigger=PropertyChanged}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl Content="{Binding Path=shape}" MouseMove="ContentControl_MouseMove"/>
+                    <ContentControl Content="{Binding Path=shape, Mode=TwoWay}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>

@@ -20,9 +20,9 @@ namespace DnD.View
     /// Interaction logic for MapCreator.xaml
     /// </summary>
     /// 
-    public partial class MapCreator : Window, INotifyPropertyChanged
+    public partial class MapCreator : Window
     {
-        private string _MousePosX = "0";
+        /*private string _MousePosX = "0";
         public string MousePositionX
         { 
             get { return _MousePosX; }
@@ -33,24 +33,23 @@ namespace DnD.View
         { 
             get { return _MousePosY; }
             set { _MousePosY = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MousePosY")); }
-        }
+        }*/
 
 
         public MapCreator()
         {
             InitializeComponent();
-            DataContext = this;
-            Application.Current.MainWindow = this;
+            //Application.Current.MainWindow = this;
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        //public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void ContentControl_MouseMove(object sender, MouseEventArgs e)
+        /*private void ContentControl_MouseMove(object sender, MouseEventArgs e)
         {
-            
+            var shp = (Shape)sender;
             var pos = e.GetPosition(Application.Current.MainWindow);
-            this.MPX.Text = Math.Floor((((pos.X - 150) / 20) + 1)).ToString();
-            this.MPY.Text = Math.Floor((((pos.Y - 50) / 20) + 1)).ToString();
-        }
+            MousePositionX = Math.Floor((((pos.X - 150) / 20) + 1)).ToString();
+            MousePositionY = Math.Floor((((pos.Y - 50) / 20) + 1)).ToString();
+        }*/
     }
 }
