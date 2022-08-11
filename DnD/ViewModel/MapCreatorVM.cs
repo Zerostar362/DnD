@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using System.Windows;
 
 namespace DnD.ViewModel
 {
@@ -55,9 +55,7 @@ namespace DnD.ViewModel
         private void forceUpdate()
         {
             ItemsToCanvas.Clear();
-            Thread.Sleep(100);
-            ItemsToCanvas.Add(new CanvasItem(0,0,CreateLine(100,100)));
-            Thread.Sleep(1000);
+            ItemsToCanvas.Add(new CanvasItem(15,15,CreateLine(100,100)));
             ItemsToCanvas[0].Left = 100;
             ItemsToCanvas[0].Top = 100;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ItemsToCanvas.Left"));
@@ -74,14 +72,14 @@ namespace DnD.ViewModel
         public ObservableCollection<CanvasItem> ItemsToCanvas 
         {
             get { return _itemsToCanvas; }
-            private set { _itemsToCanvas = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ItemsToCanvas")); }
+            set { _itemsToCanvas = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ItemsToCanvas")); }
         }
 
         public ObservableCollection<CanvasItem> _prefabricatedRooms = new ObservableCollection<CanvasItem>();
         public ObservableCollection<CanvasItem> PrefabricatedRoom
         {
             get { return _prefabricatedRooms; }
-            private set { _prefabricatedRooms = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PrefabricatedRoom")); }
+            set { _prefabricatedRooms = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PrefabricatedRoom")); }
         }
 
         private int _mousePosX;
@@ -116,33 +114,42 @@ namespace DnD.ViewModel
         }
         #endregion
 
-        private Shape CreateLine(int x, int y)
+        private DrawingVisual CreateLine(int x, int y)
         {
-            Rectangle rec = new Rectangle();
+            DrawingVisual drawingVisual = new DrawingVisual();
+
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+
+            Rect rec = new Rect();
+
+
+            
             rec.Width = x;
             rec.Height = y;
-            rec.Stroke = Brushes.Gray;
-            rec.StrokeThickness = 1;
-            rec.Fill = Brushes.White;
-            return rec;
+
+            Pen pen = new Pen();
+            pen.Brush = Brushes.Gray;
+            pen.Thickness = 1;
+            drawingContext.DrawRectangle(Brushes.White,pen,rec);
+            return drawingVisual;
         }
 
         private void CreateGrid()
         {
+            RenderMap();
+            return;
             for (int i = 0; i < (WindowWidth/20); i++)
             {
                 for (int y = 0; y < (WindowHeight/20); y++)
                 {
                     var cnvsIt = new CanvasItem(y * 20, i * 20, CreateLine(20, 20));
-                    cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
                     cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
                     cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
                     _itemsToCanvas.Add(cnvsIt);
                 }
             }
-            WindowWidth = 5;
-            WindowHeight = 50;
         }
 
 
@@ -164,31 +171,91 @@ namespace DnD.ViewModel
             if (v == 0) MapZoom++;
             else MapZoom--;
 
-            RenderMap(v);
+            RenderMap();
         }
 
-        private void RenderMap(int v)
+        private async void RenderMap()
         {
-            foreach (var item in ItemsToCanvas)
+            ItemsToCanvas.Clear();
+            RenderFirstQuadrant();
+            RenderSecondQuadrant();
+            RenderThirdQuadrant();
+            RenderFourthQuadrant();
+
+            await Task.Factory.StartNew(() => Thread.Sleep(0));
+        }
+
+        private async void RenderFirstQuadrant()
+        {
+            for (int i = 0; i < ((WindowWidth / 20)/2); i++)
             {
-                if(v == 0)
+                for (int y = 0; y < ((WindowHeight / 20)/2); y++)
                 {
-                    item.Left = item.Left - 15;
-                    item.Top = item.Top - 15;
+                    var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
+                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
+                    cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
+                    _itemsToCanvas.Add(cnvsIt);
                 }
-                else
-                {   
-                    item.Left = item.Left + 15;
-                    item.Top = item.Top + 15;
-                }
-                item.shape.Height = 20 - MapZoom;
-                item.shape.Width = item.shape.Height;
             }
+            await Task.Factory.StartNew(() => Thread.Sleep(0));
+        }
+
+        private async void RenderSecondQuadrant()
+        {
+            for (int i = 0; i < ((WindowWidth / 20) / 2); i++)
+            {
+                for (int y = ((WindowHeight / 20) / 2); y < ((WindowHeight / 20)); y++)
+                {
+                    var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
+                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
+                    cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
+                    _itemsToCanvas.Add(cnvsIt);
+                }
+            }
+            await Task.Factory.StartNew(() => Thread.Sleep(0));
+        }
+
+        private async void RenderThirdQuadrant()
+        {
+            for (int i = ((WindowWidth / 20) / 2); i < (WindowWidth / 20); i++)
+            {
+                for (int y = 0; y < ((WindowHeight / 20) /2); y++)
+                {
+                    var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
+                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
+                    cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
+                    _itemsToCanvas.Add(cnvsIt);
+                }
+            }
+            await Task.Factory.StartNew(() => Thread.Sleep(0));
+        }
+
+        private async void RenderFourthQuadrant()
+        {
+            for (int i = ((WindowWidth / 20) / 2); i < (WindowWidth / 20); i++)
+            {
+                for (int y = ((WindowHeight / 20) / 2); y < (WindowHeight / 20); y++)
+                {
+                    var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
+                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
+                    cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
+                    _itemsToCanvas.Add(cnvsIt);
+                }
+            }
+            await Task.Factory.StartNew(() => Thread.Sleep(0));
         }
 
 
         #region Events
-        private void ContentControl_MouseUnClick(object sender, MouseButtonEventArgs e)
+       /* private void ContentControl_MouseUnClick(object sender, MouseButtonEventArgs e)
         {
             _MouseButtonState = e.ButtonState;
             var shp = (Rectangle)sender;
@@ -215,13 +282,13 @@ namespace DnD.ViewModel
                 if (shp.Fill == Brushes.Red) return;
                 shp.Fill = Brushes.BlueViolet;
             }
-        }
+        }*/
         #endregion
     }
 
     public class CanvasItem
     {
-        public CanvasItem(double top, double left, Shape sshape, string name = "Test")
+        public CanvasItem(double top, double left, DrawingVisual sshape, string name = "Test")
         {
             Name = name;
             Top = top;
@@ -232,6 +299,8 @@ namespace DnD.ViewModel
         public string Name { get; set; } = "Test";
         public double Top { get; set; }
         public double Left { get; set; }
-        public Shape shape { get; set; }
+
+        public VisualCollection visuals { get; set; }
+        //public DrawingVisual shape { get; set; }
     }
 }

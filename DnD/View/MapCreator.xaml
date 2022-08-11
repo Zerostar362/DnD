@@ -53,8 +53,9 @@
             <TextBlock Text="{Binding MapZoom}"/>
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1">
-        <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}" Grid.Column="1" Grid.Row="1">
-            <ItemsControl.ItemsPanel>
+            <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}"
+                      Grid.Column="1" Grid.Row="1">
+                <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas/>
                 </ItemsPanelTemplate>
@@ -67,7 +68,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl Content="{Binding Path=shape, Mode=TwoWay}"/>
+                    <ContentControl Content="{Binding Path=shape}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
