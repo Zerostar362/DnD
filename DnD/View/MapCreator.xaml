@@ -35,25 +35,27 @@
         <DockPanel Grid.Column="1" Grid.Row="0">
             <GroupBox Header="DrawModes">
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Corridor"/>
-                    <Button Content="Room"/>
+                    <Button Content="Corridor" Command="{Binding SetCorridor}"/>
+                    <Button Content="Room" Command="{Binding SetRoom}"/>
+                    <Button Content="Door" Command="{Binding SetDoor}"/>
+                    <Button Content="InvestigationSpaces" Command="{Binding SetInvestigationSpaces}"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Enemies">
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Troll"/>
-                    <Button Content="Gnome"/>
+                    <Button x:Name="Troll" Content="Troll" Command="{Binding SetEnemy}" CommandParameter="{Binding ElementName=Troll}"/>
+                    <Button x:Name="Gnome" Content="Gnome" Command="{Binding SetEnemy}" CommandParameter="{Binding ElementName=Gnome}"/>
                 </StackPanel>
             </GroupBox>
         </DockPanel>
         <StackPanel Grid.Row="1">
-            <Button Command="{Binding ForceUpdate}" Content="ForceUpdate"/>
+            <Button Content="Delete" Command="{Binding Delete}"/>
             <TextBlock Text="{Binding MousePosX}"/>
             <TextBlock Text="{Binding MousePosY}"/>
             <TextBlock Text="{Binding MapZoom}"/>
         </StackPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas}"
+        <ScrollViewer Grid.Column="1" Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Path=ItemsToCanvas, UpdateSourceTrigger=PropertyChanged}"
                       Grid.Column="1" Grid.Row="1">
                 <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -68,7 +70,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl Content="{Binding Path=shape}"/>
+                    <ContentControl Content="{Binding shape}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

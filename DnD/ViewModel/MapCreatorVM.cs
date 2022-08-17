@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows;
+using System.Windows.Shapes;
 
 namespace DnD.ViewModel
 {
@@ -27,16 +28,53 @@ namespace DnD.ViewModel
 
         #region commands constructor
 
-        public ICommand SelectTile { get; }
-        public ICommand ForceUpdate { get; }
+        public ICommand SetCorridor { get; }
+        public ICommand SetRoom { get; }
+        public ICommand SetDoor { get; }
+        public ICommand SetInvestigationSpaces { get; }
+        public ICommand SetEnemy { get; }
+        public ICommand Delete { get; }
 
         #region methods
-        public void CreateCommands()
+        private ICommand Cmd(Action<object?> execute, Func<object?, bool>? canExecute = null) => new Command(execute, canExecute);
+
+        private void SetCorridorCmd()
         {
-            
+            EntityName = "";
+            brushes = Brushes.Gray;
         }
 
-        private ICommand Cmd(Action<object?> execute, Func<object?, bool>? canExecute = null) => new Command(execute, canExecute);
+        private void SetRoomCmd()
+        {
+            EntityName = "";
+            brushes = Brushes.Blue;
+        }
+
+        private void SetDoorCmd()
+        {
+            EntityName = "";
+            brushes = Brushes.Brown;
+        }
+
+        private void SetInvestigationSpacesCmd()
+        {
+            EntityName = "";
+            brushes = Brushes.Green;
+        }
+
+        private void PerformSetEnemy(object? btn)
+        {
+            if (btn is not Button button) return;
+            EntityName = button.Name;
+            brushes = Brushes.Red;
+        }
+
+        private void PerformDelete()
+        {
+            EntityName = "";
+            brushes = Brushes.White;
+        }
+
         #endregion
 
         #endregion
@@ -44,27 +82,18 @@ namespace DnD.ViewModel
         public MapCreatorVM()
         {
             //CreateCommands();
-            SelectTile = Cmd(p => SetTile());
-            ForceUpdate = Cmd(p => forceUpdate());
-
+            SetCorridor = Cmd(p => SetCorridorCmd());
+            SetRoom = Cmd(p => SetRoomCmd());
+            SetDoor = Cmd(p => SetDoorCmd());
+            SetInvestigationSpaces = Cmd(p => SetInvestigationSpacesCmd());
+            SetEnemy = Cmd(p => PerformSetEnemy(p));
+            Delete = Cmd(p => PerformDelete());
 
             //must be last, due to command settings
             CreateGrid();
         }
 
-        private void forceUpdate()
-        {
-            ItemsToCanvas.Clear();
-            ItemsToCanvas.Add(new CanvasItem(15,15,CreateLine(100,100)));
-            ItemsToCanvas[0].Left = 100;
-            ItemsToCanvas[0].Top = 100;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ItemsToCanvas.Left"));
-        }
-
-        private void SetTile()
-        {
-            
-        }
+        
 
         #region properties
         public ObservableCollection<CanvasItem> _itemsToCanvas = new ObservableCollection<CanvasItem>();
@@ -96,6 +125,9 @@ namespace DnD.ViewModel
             set { _mousePosY = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MousePosY))); }
         }
 
+        private SolidColorBrush brushes { get; set; }
+        private string EntityName;
+
 
         public int WindowHeight { get; set; } = 810;
 
@@ -104,7 +136,14 @@ namespace DnD.ViewModel
 
         private MouseButtonState _MouseButtonState = MouseButtonState.Released;
 
-        private int _DrawMode = 0;
+
+        /* DrawMode 0 - No Draw
+         * DrawMode 1 - Corridor
+         * DrawMode 2 - Room
+         * DrawMode 3 - Door
+         * DrawMode 4 - InvestigationSpaces
+         */
+        //private int _DrawMode = 0;
 
         private int _mapZoom;
         public int MapZoom
@@ -114,42 +153,32 @@ namespace DnD.ViewModel
         }
         #endregion
 
-        private DrawingVisual CreateLine(int x, int y)
+        private Shape CreateLine(int x, int y)
         {
-            DrawingVisual drawingVisual = new DrawingVisual();
+            //DrawingVisual drawingVisual = new DrawingVisual();
 
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
+            //DrawingContext drawingContext = drawingVisual.RenderOpen();
 
-            Rect rec = new Rect();
+            //Rect rec = new Rect();
 
+            Rectangle rec = new Rectangle();
 
             
             rec.Width = x;
             rec.Height = y;
 
-            Pen pen = new Pen();
-            pen.Brush = Brushes.Gray;
-            pen.Thickness = 1;
-            drawingContext.DrawRectangle(Brushes.White,pen,rec);
-            return drawingVisual;
+            rec.Fill = Brushes.White;
+            rec.StrokeThickness = 1;
+            rec.Stroke =  Brushes.Black;
+            return rec;
         }
 
         private void CreateGrid()
         {
-            RenderMap();
-            return;
-            for (int i = 0; i < (WindowWidth/20); i++)
-            {
-                for (int y = 0; y < (WindowHeight/20); y++)
-                {
-                    var cnvsIt = new CanvasItem(y * 20, i * 20, CreateLine(20, 20));
-                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
-                    cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
-                    cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
-                    _itemsToCanvas.Add(cnvsIt);
-                }
-            }
+            RenderFirstQuadrant();
+            RenderSecondQuadrant();
+            RenderThirdQuadrant();
+            RenderFourthQuadrant();
         }
 
 
@@ -168,19 +197,35 @@ namespace DnD.ViewModel
 
         private void ZoomMap(int v)
         {
+
+            //1 kolecko nahoru
+            //0 kolecko dolu
             if (v == 0) MapZoom++;
             else MapZoom--;
 
-            RenderMap();
+            RenderMap(v);
         }
 
-        private async void RenderMap()
+        private async void RenderMap(int v)
         {
-            ItemsToCanvas.Clear();
-            RenderFirstQuadrant();
-            RenderSecondQuadrant();
-            RenderThirdQuadrant();
-            RenderFourthQuadrant();
+            int indicator;
+            if (v == 0) indicator = 1;
+            else indicator = -1;
+
+            foreach (var item in ItemsToCanvas)
+            {
+                if (item.shape.Height + MapZoom < 0) break;
+                
+                item.shape.Height = (item.shape.Height + indicator);
+                item.shape.Width = (item.shape.Width + indicator);
+
+               
+                var x = (item.Left / item.shape.Width);
+                var y = (item.Top / item.shape.Height);
+
+                item.Left = x * (item.shape.Width + indicator);
+                item.Top = y * (item.shape.Height + indicator);
+            }
 
             await Task.Factory.StartNew(() => Thread.Sleep(0));
         }
@@ -192,11 +237,11 @@ namespace DnD.ViewModel
                 for (int y = 0; y < ((WindowHeight / 20)/2); y++)
                 {
                     var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
-                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseMove += ContentControl_MouseMove;
                     cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
                     cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
-                    _itemsToCanvas.Add(cnvsIt);
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;
+                    ItemsToCanvas.Add(cnvsIt);
                 }
             }
             await Task.Factory.StartNew(() => Thread.Sleep(0));
@@ -209,11 +254,11 @@ namespace DnD.ViewModel
                 for (int y = ((WindowHeight / 20) / 2); y < ((WindowHeight / 20)); y++)
                 {
                     var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
-                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseMove += ContentControl_MouseMove;
                     cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
                     cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
-                    _itemsToCanvas.Add(cnvsIt);
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;
+                    ItemsToCanvas.Add(cnvsIt);
                 }
             }
             await Task.Factory.StartNew(() => Thread.Sleep(0));
@@ -226,11 +271,11 @@ namespace DnD.ViewModel
                 for (int y = 0; y < ((WindowHeight / 20) /2); y++)
                 {
                     var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
-                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseMove += ContentControl_MouseMove;
                     cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
                     cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
-                    _itemsToCanvas.Add(cnvsIt);
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;
+                    ItemsToCanvas.Add(cnvsIt);
                 }
             }
             await Task.Factory.StartNew(() => Thread.Sleep(0));
@@ -243,11 +288,11 @@ namespace DnD.ViewModel
                 for (int y = ((WindowHeight / 20) / 2); y < (WindowHeight / 20); y++)
                 {
                     var cnvsIt = new CanvasItem(y * (20 - MapZoom), i * (20 - MapZoom), CreateLine(20 - MapZoom, 20 - MapZoom));
-                    /*cnvsIt.shape.MouseMove += ContentControl_MouseMove;
+                    cnvsIt.shape.MouseMove += ContentControl_MouseMove;
                     cnvsIt.shape.MouseLeftButtonDown += ContentControl_MouseClick;
                     cnvsIt.shape.MouseLeftButtonUp += ContentControl_MouseUnClick;
-                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;*/
-                    _itemsToCanvas.Add(cnvsIt);
+                    cnvsIt.shape.MouseWheel += ContentControl_MouseWheel;
+                    ItemsToCanvas.Add(cnvsIt);
                 }
             }
             await Task.Factory.StartNew(() => Thread.Sleep(0));
@@ -255,40 +300,48 @@ namespace DnD.ViewModel
 
 
         #region Events
-       /* private void ContentControl_MouseUnClick(object sender, MouseButtonEventArgs e)
+        private void ContentControl_MouseUnClick(object sender, MouseButtonEventArgs e)
         {
             _MouseButtonState = e.ButtonState;
-            var shp = (Rectangle)sender;
-            shp.Fill = Brushes.Green;
         }
 
         private void ContentControl_MouseClick(object sender, MouseButtonEventArgs e)
         {
-            var shp = (Rectangle)sender;
-            shp.Fill = Brushes.Red;
             _MouseButtonState = e.ButtonState;
+            var shp = (Shape)sender;
+            var item = (CanvasItem)shp.DataContext;
+            if (_MouseButtonState == MouseButtonState.Pressed)
+            {
+                shp = (Rectangle)sender;
+                if (brushes == Brushes.Red || brushes == Brushes.White) item.Name = EntityName;
+                shp.Fill = brushes;
+            }
         }
 
         private void ContentControl_MouseMove(object sender, MouseEventArgs e)
         {
             var shp = (Shape)sender;
             var item = (CanvasItem)shp.DataContext;
-            MousePosX = ((int)item.Left/10)/2;
-            MousePosY = ((int)item.Top/10)/2;
+            MousePosX = ((int)item.Left / 10) / 2;
+            MousePosY = ((int)item.Top / 10) / 2;
 
-            if(_MouseButtonState == MouseButtonState.Pressed)
+            if (_MouseButtonState == MouseButtonState.Pressed)
             {
                 shp = (Rectangle)sender;
-                if (shp.Fill == Brushes.Red) return;
-                shp.Fill = Brushes.BlueViolet;
+                if (brushes == Brushes.Red || brushes == Brushes.White) item.Name = EntityName;
+                shp.Fill = brushes;
             }
-        }*/
+        }
         #endregion
     }
 
-    public class CanvasItem
+    public class CanvasItem : INotifyPropertyChanged
     {
-        public CanvasItem(double top, double left, DrawingVisual sshape, string name = "Test")
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        public CanvasItem(double top, double left, Shape sshape, string name = "Test")
         {
             Name = name;
             Top = top;
@@ -297,10 +350,31 @@ namespace DnD.ViewModel
         }
 
         public string Name { get; set; } = "Test";
-        public double Top { get; set; }
-        public double Left { get; set; }
 
-        public VisualCollection visuals { get; set; }
-        //public DrawingVisual shape { get; set; }
+        private double _top;
+        public double Top 
+        {
+            get => _top; 
+            set { _top = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Top")); }
+        }
+
+        private double _left;
+        public double Left 
+        {
+            get => _left;
+            set { _left = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Left")); }
+        }
+
+        private Shape _shape;
+        public Shape shape 
+        {
+            get => _shape;
+            set { _shape = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("shape")); }
+        }
+
+        public void OnPropertyChanged()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("shape"));
+        }
     }
 }

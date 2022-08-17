@@ -29,11 +29,6 @@ namespace DnD.Model.System
             }
         }
 
-        /*public static bool Save<TValue>()
-        {
-
-        }*/
-
         public static LoadedData Load<TValue>()
         {
             Type tp = typeof(TValue);
