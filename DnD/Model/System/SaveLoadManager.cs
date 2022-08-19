@@ -1,4 +1,6 @@
-﻿using DnD.Model.System.ExtensionMethods;
+﻿using DnD.Interfaces;
+using DnD.Model.Interfaces;
+using DnD.Model.System.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,33 +10,103 @@ using System.Threading.Tasks;
 
 namespace DnD.Model.System
 {
-    internal static class SaveLoadManager
+    public static class SaveLoadManager
     {
-        private static readonly string _savePath = Environment.CurrentDirectory + "SaveFolder/";
-        public class LoadedData
+        private static readonly string _savePathMain = Environment.CurrentDirectory + "SaveFolder/";
+        private static readonly string _savePathMap = _savePathMain + "Map/";
+        private static readonly string _savePathEntities = _savePathMain + "Entities/";
+        private static readonly string _savePathPrefabricates = _savePathMain + "Prefabricates/";
+        private static readonly string _savePathGame = _savePathMain + "SaveGame/";
+
+
+        public static bool SaveData<TValue>(TValue obj)
         {
-            public Type ClassType { get; private set; }
-            public string Name { get; private set; }
-            public bool isInterface { get; private set; }
-
-            public object Data { get; private set; }
-
-
-            public LoadedData(Type type, object data)
+            try
             {
-                this.ClassType   = type;
-                this.Name        = type.Name;
-                this.isInterface = type.IsInterface;
-                this.Data = data;
+                if (!IsEligible(obj)) return false;
+                var objType = obj.GetType();
+                var objName = objType.Name + ".json";
+                var json = obj.ToJson();
+
+                var savePath = GetCorrectSavePath(objType);
+
+                File.WriteAllText(savePath + objName, json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        public static TValue? LoadData<TValue>(TValue obj)
+        {
+            if (!IsEligible(obj)) return default(TValue);
+
+            var objType = obj.GetType();
+            var objName = objType.Name + ".json";
+            var savePath = GetCorrectSavePath(objType) + objName;
+            return File.ReadAllText(savePath).ConvertJson<TValue>();
+        }
+
+        private static bool IsEligible<TValue>(TValue obj)
+        {
+            try
+            {
+                obj = obj ?? throw new ArgumentNullException(nameof(obj));
+                if (!obj.GetType().IsInterface) throw new ArgumentException("TValue must be an interface");
+                return true;
+            }
+            
+            catch { return false; }
+        }
+
+
+        private static string GetCorrectSavePath(Type objType)
+        {
+            switch (objType)
+            {
+                case IConsumables: return _savePathEntities;
+                case IDoor: return _savePathPrefabricates;
+                case IEnemy: return _savePathEntities;
+                case IInvestigationSpace: return _savePathPrefabricates;
+                case IItem: return _savePathEntities;
+                case IMap: return _savePathMap;
+                case IObstacle: return _savePathPrefabricates;
+                case IPlayableArea: return _savePathPrefabricates;
+                case IPlayer: return _savePathEntities;
+                case ISpell: return _savePathEntities;
             }
         }
 
-        public static LoadedData Load<TValue>()
+        public static void StartupPathCheck()
         {
-            Type tp = typeof(TValue);
-            string svpth = _savePath + tp.Name;
-            var obj = File.ReadAllText(svpth).ConvertJson<TValue>(); //todo Convert from Json to readable format
-            return new LoadedData(tp,obj);
+            for (int i = 0; i < 4; i++)
+            {
+                switch (i)
+                {
+                    case 0: CheckOrCreateSavePath(_savePathMain);
+                        break;
+                    case 1: CheckOrCreateSavePath(_savePathPrefabricates);
+                        break;
+                    case 2: CheckOrCreateSavePath(_savePathGame);
+                        break;
+                    case 3: CheckOrCreateSavePath(_savePathMap);
+                        break;
+                    case 4: CheckOrCreateSavePath(_savePathEntities);
+                        break;
+                }
+            }
+        }
+
+
+        private static void CheckOrCreateSavePath(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }

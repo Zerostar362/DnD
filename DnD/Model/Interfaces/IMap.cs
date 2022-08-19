@@ -8,6 +8,7 @@ namespace DnD.Interfaces
 {
     internal interface IMap
     {
-
+        public int NumberOfRows { get; set; }
+        public int NumberOfColumns { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DnD.View;
+﻿using DnD.Model.System;
+using DnD.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace DnD
         public MainWindow()
         {
             InitializeComponent();
+            //temporary
+            SaveLoadManager.StartupPathCheck();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

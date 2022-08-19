@@ -1,4 +1,5 @@
 ﻿using DnD.Interfaces;
+using DnD.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DnD.Models.EnemyRelated
 {
-    internal class TargetDummy : IEnemy
+    public class TargetDummy : IEnemy
     {
 
         private int _armor = 0;
@@ -20,6 +21,7 @@ namespace DnD.Models.EnemyRelated
         private int _criticalStrikeChance = 0;
         private int _abilityPower = 0;
         private int _mana = 0;
+        private List<ISpell> _spellList = new List<ISpell>();
 
         public int Armor { get => _armor; set =>  _armor = value; }
         public int MagicResist { get => _magicResist; set => _magicResist = value; }
@@ -31,6 +33,7 @@ namespace DnD.Models.EnemyRelated
         public int CriticalStrikeChance { get => _criticalStrikeChance; set => _criticalStrikeChance = value; }
         public int AbilityPower { get => _abilityPower; set => _abilityPower = value; }
         public int Mana { get => _mana; set => _mana = value; }
+        public List<ISpell> SpellList {get => _spellList; set => _spellList = value; }
 
         public virtual void Attack()
         {

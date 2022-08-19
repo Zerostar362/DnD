@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DnD.Model.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,8 @@ namespace DnD.Interfaces
         int CriticalStrikeChance { get; set; }
         int AbilityPower { get; set; }
         int Mana { get; set; }
+        List<ISpell> SpellList {get;set;}
+
         public void Attack();
 
         public void Move();
