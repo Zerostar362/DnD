@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Shapes;
+using DnD.Interfaces;
+using DnD.Models.MapRelated;
 
 namespace DnD.ViewModel
 {
@@ -34,46 +36,72 @@ namespace DnD.ViewModel
         public ICommand SetInvestigationSpaces { get; }
         public ICommand SetEnemy { get; }
         public ICommand Delete { get; }
+        public ICommand SaveMap { get; }
+        public ICommand SetSizer { get; }
 
         #region methods
         private ICommand Cmd(Action<object?> execute, Func<object?, bool>? canExecute = null) => new Command(execute, canExecute);
 
         private void SetCorridorCmd()
         {
+            _SizerActive = false;
             EntityName = "";
             brushes = Brushes.Gray;
+            EntityInterfaceType = typeof(IPlayableArea);
         }
 
         private void SetRoomCmd()
         {
+            _SizerActive = false;
             EntityName = "";
             brushes = Brushes.Blue;
+            EntityInterfaceType = typeof(IPlayableArea);
         }
 
         private void SetDoorCmd()
         {
+            _SizerActive = false;
             EntityName = "";
             brushes = Brushes.Brown;
+            EntityInterfaceType= typeof(IDoor);
         }
 
         private void SetInvestigationSpacesCmd()
         {
+            _SizerActive = false;
             EntityName = "";
             brushes = Brushes.Green;
+            EntityInterfaceType = typeof(IInvestigationSpace);
         }
 
         private void PerformSetEnemy(object? btn)
         {
+            _SizerActive = false;
             if (btn is not Button button) return;
             EntityName = button.Name;
             brushes = Brushes.Red;
+            EntityInterfaceType = typeof(IEnemy);
         }
 
         private void PerformDelete()
         {
+            _SizerActive = false;
             EntityName = "";
             brushes = Brushes.White;
+            EntityInterfaceType = null;
         }
+
+        private void SetSizerAction()
+        {
+            brushes = _ActualBrushHover;
+            _SizerActive = true;
+        }
+
+        private void SaveMapAction()
+        {
+
+        }
+
 
         #endregion
 
@@ -88,12 +116,12 @@ namespace DnD.ViewModel
             SetInvestigationSpaces = Cmd(p => SetInvestigationSpacesCmd());
             SetEnemy = Cmd(p => PerformSetEnemy(p));
             Delete = Cmd(p => PerformDelete());
+            SaveMap = Cmd(p => SaveMapAction());
+            SetSizer = Cmd(p => SetSizerAction());
 
             //must be last, due to command settings
             CreateGrid();
         }
-
-        
 
         #region properties
         public ObservableCollection<CanvasItem> _itemsToCanvas = new ObservableCollection<CanvasItem>();
@@ -126,7 +154,10 @@ namespace DnD.ViewModel
         }
 
         private SolidColorBrush brushes { get; set; }
+        private SolidColorBrush _ActualBrushHover;
         private string EntityName;
+        private Type? EntityInterfaceType = null;
+        private bool _SizerActive = true;
 
 
         public int WindowHeight { get; set; } = 810;
@@ -197,7 +228,6 @@ namespace DnD.ViewModel
 
         private void ZoomMap(int v)
         {
-
             //1 kolecko nahoru
             //0 kolecko dolu
             if (v == 0) MapZoom++;
@@ -206,7 +236,7 @@ namespace DnD.ViewModel
             RenderMap(v);
         }
 
-        private async void RenderMap(int v)
+        private void RenderMap(int v)
         {
             int indicator;
             if (v == 0) indicator = 1;
@@ -226,8 +256,6 @@ namespace DnD.ViewModel
                 item.Left = x * (item.shape.Width + indicator);
                 item.Top = y * (item.shape.Height + indicator);
             }
-
-            await Task.Factory.StartNew(() => Thread.Sleep(0));
         }
 
         private async void RenderFirstQuadrant()
@@ -324,6 +352,11 @@ namespace DnD.ViewModel
             var item = (CanvasItem)shp.DataContext;
             MousePosX = ((int)item.Left / 10) / 2;
             MousePosY = ((int)item.Top / 10) / 2;
+            if (_SizerActive)
+            {
+                _ActualBrushHover = (SolidColorBrush)shp.Fill;
+            }
+
 
             if (_MouseButtonState == MouseButtonState.Pressed)
             {
@@ -331,6 +364,12 @@ namespace DnD.ViewModel
                 if (brushes == Brushes.Red || brushes == Brushes.White) item.Name = EntityName;
                 shp.Fill = brushes;
             }
+        }
+
+        private void ContentControl_MouseRightClick(object sender, MouseButtonEventArgs e)
+        {
+            var shp = (Shape)sender;
+            var item = (CanvasItem)shp.DataContext;
         }
         #endregion
     }
@@ -370,6 +409,27 @@ namespace DnD.ViewModel
         {
             get => _shape;
             set { _shape = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("shape")); }
+        }
+
+        private Type? interfaceType;
+        private object? _object;
+
+        public void AddObject(object obj)
+        {
+            _object = obj;
+        }
+
+        public void AddInterfaceType(Type interType)
+        {
+            interfaceType = interType;
+        }
+
+        public void RemoveObjectAndType() { _object = null; interfaceType = null; }
+
+        public void GetObject(out Type type, out object obj)
+        {
+            type = interfaceType;
+            obj = _object;
         }
 
         public void OnPropertyChanged()

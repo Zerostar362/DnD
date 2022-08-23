@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DnD.Model.System
 {
@@ -30,8 +31,24 @@ namespace DnD.Model.System
 
                 var savePath = GetCorrectSavePath(objType);
 
-                File.WriteAllText(savePath + objName, json);
-                return true;
+                if (savePath == "") throw new Exception("Faulty save path");
+
+                savePath += objName;
+
+                if(File.Exists(savePath))
+                {
+                    var result = MessageBox.Show("Save with same name was found, do wish to overwrite ?", "", MessageBoxButton.YesNo);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            File.WriteAllText(savePath + objName, json);
+                            return true;
+                        case MessageBoxResult.No:
+                            return false;
+                    }
+                }
+
+                return false;
             }
             catch
             {
@@ -77,6 +94,7 @@ namespace DnD.Model.System
                 case IPlayableArea: return _savePathPrefabricates;
                 case IPlayer: return _savePathEntities;
                 case ISpell: return _savePathEntities;
+                default:return "";
             }
         }
 

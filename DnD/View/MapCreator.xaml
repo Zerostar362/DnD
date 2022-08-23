@@ -39,6 +39,7 @@
                     <Button Content="Room" Command="{Binding SetRoom}"/>
                     <Button Content="Door" Command="{Binding SetDoor}"/>
                     <Button Content="InvestigationSpaces" Command="{Binding SetInvestigationSpaces}"/>
+                    <Button Content="Sizer" Command="{Binding SetSizer}"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Enemies">
