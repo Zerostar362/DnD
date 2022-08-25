@@ -99,7 +99,7 @@ namespace DnD.ViewModel
 
         private void SaveMapAction()
         {
-
+            CalculateObjects();
         }
 
 
@@ -183,6 +183,11 @@ namespace DnD.ViewModel
             private set { _mapZoom = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MapZoom")); }
         }
         #endregion
+
+        private IMap CalculateObjects()
+        {
+            
+        }
 
         private Shape CreateLine(int x, int y)
         {

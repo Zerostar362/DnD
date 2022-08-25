@@ -8,5 +8,6 @@ namespace DnD.Interfaces
 {
     internal interface IInvestigationSpace
     {
+        int[,] Tiles { get;set;}
     }
 }

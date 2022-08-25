@@ -8,5 +8,6 @@ namespace DnD.Interfaces
 {
     internal interface IObstacle
     {
+        int[,] tiles { get;set;}
     }
 }

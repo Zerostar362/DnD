@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DnD.Interfaces;
+using DnD.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DnD.Models.MapRelated
 {
-    internal class Map
+    internal class Map : IMap
     {
         public int Width { get; private set; }
 
@@ -16,21 +18,39 @@ namespace DnD.Models.MapRelated
 
         public int NumberOfRooms { get; private set; }
 
-        private List<Room> ListOfRooms { get; set; }
-
-        private List<Corridor> ListOfCorridors { get; set; }
-
         public string MapLore { get; private set; }
+        public int NumberOfRows { get; set; }
+        public int NumberOfColumns { get; set; }
+        public List<IDoor> Doors { get; set; }
+        public List<IEnemy> Enemies { get; set; }
+        public List<IInvestigationSpace> InvestigationSpaces { get; set; }
+        public List<IObstacle> Obstacle { get; set; }
+        public List<IPlayableArea> PlayableAres { get; set; }
 
-        public Map(int width, int height, int numberOfCorridors, int numberOfRooms, List<Room> listOfRooms, List<Corridor> listOfCorridors, string mapLore)
+        public Map(int width, int height, int numberOfCorridors, int numberOfRooms, string mapLore)
         {
             Width = width;
             Height = height;
             NumberOfCorridors = numberOfCorridors;
             NumberOfRooms = numberOfRooms;
-            ListOfRooms = listOfRooms;
-            ListOfCorridors = listOfCorridors;
             MapLore = mapLore;
-        }   
+        }
+
+        public Map(List<CanvasItem> items)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                ResolveDoors(items);
+                ResolveEnemies(items);
+                ResolveInvestigationSpaces(items);
+                ResolveObstacles(items);
+                ResolvePlayableAreas(items);
+            }
+        }
+
+        private void ResolveDoors(List<CanvasItem> items)
+        {
+
+        }
     }
 }

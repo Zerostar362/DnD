@@ -19,6 +19,7 @@ namespace DnD.Interfaces
         int CriticalStrikeChance { get; set; }
         int AbilityPower { get; set; }
         int Mana { get; set; }
+        int[,] Position { get;set;}
         List<ISpell> SpellList {get;set;}
 
         public void Attack();

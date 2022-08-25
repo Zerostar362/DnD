@@ -10,5 +10,11 @@ namespace DnD.Interfaces
     {
         public int NumberOfRows { get; set; }
         public int NumberOfColumns { get; set; }
+
+        List<IDoor> Doors { get; set; }
+        List<IEnemy> Enemies { get; set; }
+        List<IInvestigationSpace> InvestigationSpaces { get; set; }
+        List<IObstacle> Obstacle { get; set; }
+        List<IPlayableArea> PlayableAres { get; set; }
     }
 }

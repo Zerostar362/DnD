@@ -8,5 +8,6 @@ namespace DnD.Interfaces
 {
     internal interface IDoor
     {
+        int[,] Tiles { get;set;}
     }
 }

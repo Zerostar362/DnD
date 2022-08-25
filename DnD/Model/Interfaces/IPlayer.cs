@@ -8,6 +8,8 @@ namespace DnD.Interfaces
 {
     internal interface IPlayer
     {
+        public int[,] Position { get;set;}
+
         public void Attack();
 
         public void Move();

@@ -19,10 +19,11 @@ namespace DnD.Interfaces
 
         bool isLighted { get; set; }
 
-        List<IEnemy>? ListOfEnemies { set; }
+        List<IEnemy>? ListOfEnemies { get; set; }
 
-        List<IDoor>? ListOfDoors { set; }
+        List<IDoor>? ListOfDoors { get; set; }
 
+        int[,] Tiles { get; set;}
 
         public bool MovementCheck(int x, int y, int toX, int toY);
 
